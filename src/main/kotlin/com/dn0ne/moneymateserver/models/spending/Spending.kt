@@ -3,7 +3,6 @@ package com.dn0ne.moneymateserver.models.spending
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Contextual
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
