@@ -30,7 +30,7 @@ sealed class Change {
     @SerialName("Change.DeleteSpending")
     data class DeleteSpending(
         @Contextual override val changeId: ObjectId,
-        val document: Spending
+        @Contextual val documentId: ObjectId
     ) : Change()
 
     @Serializable
@@ -51,6 +51,6 @@ sealed class Change {
     @SerialName("Change.DeleteCategory")
     data class DeleteCategory(
         @Contextual override val changeId: ObjectId,
-        val document: Category
+        @Contextual val documentId: ObjectId
     ) : Change()
 }

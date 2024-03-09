@@ -59,21 +59,21 @@ class ChangeLogService(
 }
 
 fun List<Change>.optimizeChanges(): List<Change> {
-    val listOfDeletedSpendingId = filterIsInstance<Change.DeleteSpending>().map { it.document.id }
+    val listOfDeletedSpendingId = filterIsInstance<Change.DeleteSpending>().map { it.documentId }
     val listOfInsertedSpendingId = filterIsInstance<Change.InsertSpending>().map { it.document.id }
 
-    val listOfDeletedCategoryId = filterIsInstance<Change.DeleteCategory>().map { it.document.id }
+    val listOfDeletedCategoryId = filterIsInstance<Change.DeleteCategory>().map { it.documentId }
     val listOfInsertedCategoryId = filterIsInstance<Change.InsertCategory>().map { it.document.id }
 
     val optimizedList = filter { change ->
         when(change) {
             is Change.InsertCategory -> change.document.id !in listOfDeletedCategoryId
             is Change.UpdateCategory -> change.document.id !in listOfDeletedCategoryId
-            is Change.DeleteCategory -> change.document.id !in listOfInsertedCategoryId
+            is Change.DeleteCategory -> change.documentId !in listOfInsertedCategoryId
 
             is Change.InsertSpending -> change.document.id !in listOfDeletedSpendingId
             is Change.UpdateSpending -> change.document.id !in listOfDeletedSpendingId
-            is Change.DeleteSpending -> change.document.id !in listOfInsertedSpendingId
+            is Change.DeleteSpending -> change.documentId !in listOfInsertedSpendingId
         }
     }
 
