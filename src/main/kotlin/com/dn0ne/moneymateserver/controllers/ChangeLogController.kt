@@ -5,6 +5,10 @@ import com.dn0ne.moneymateserver.services.ChangeLogService
 import com.dn0ne.moneymateserver.services.exceptions.NotFoundException
 import com.dn0ne.moneymateserver.utils.JsonParser
 import com.dn0ne.moneymateserver.utils.JwtHelper
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.serializers.InstantIso8601Serializer
+import kotlinx.datetime.serializers.LocalDateTimeIso8601Serializer
 import kotlinx.serialization.SerializationException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,15 +32,13 @@ class ChangeLogController(
 
         return try {
             val changes = changeLogService.getChanges(token)
-            logger.debug("Changes of user ${JwtHelper.extractUsername(token)}: " + changes.joinToString())
             ResponseEntity.ok(changes)
         } catch (e: NotFoundException) {
-            logger.debug("Changes of user ${JwtHelper.extractUsername(token)} not found")
             ResponseEntity.notFound().build()
         }
     }
 
-    @GetMapping("/afterId")
+    @PostMapping("/afterId")
     fun getChangesAfterId(
         @RequestHeader(HttpHeaders.AUTHORIZATION) authHeader: String,
         @RequestBody changeId: String
@@ -45,13 +47,10 @@ class ChangeLogController(
 
         return try {
             val changesAfterId = changeLogService.getChangesAfterId(token, changeId)
-            logger.debug("Changes of user ${JwtHelper.extractUsername(token)}: " + changesAfterId.joinToString())
             ResponseEntity.ok(changesAfterId)
         } catch (e: NotFoundException) {
-            logger.debug(e.message)
             ResponseEntity.notFound().build()
         } catch (e: IllegalArgumentException) {
-            logger.debug("Id $changeId is unprocessable")
             ResponseEntity.unprocessableEntity().build()
         }
     }
@@ -68,13 +67,10 @@ class ChangeLogController(
             changeLogService.insertChanges(token, changes)
             ResponseEntity.ok().build()
         } catch (e: SerializationException) {
-            logger.error(e.message)
             ResponseEntity.badRequest().build()
         } catch (e: IllegalArgumentException) {
-            logger.error(e.message)
             ResponseEntity.badRequest().build()
         } catch (e: NotFoundException) {
-            logger.debug(e.message)
             ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
         }
     }
