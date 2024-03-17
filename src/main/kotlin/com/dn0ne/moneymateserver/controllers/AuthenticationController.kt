@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.AuthenticationException
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -47,8 +48,12 @@ class AuthenticationController(
 
     @PostMapping("/login", consumes = ["application/json"])
     fun login(@RequestBody user: User): ResponseEntity<String> {
-        authenticationManager.authenticate(UsernamePasswordAuthenticationToken(user.email, user.password))
-        val token = JwtHelper.generateToken(user.email)
-        return ResponseEntity.ok(token)
+        return try {
+            authenticationManager.authenticate(UsernamePasswordAuthenticationToken(user.email, user.password))
+            val token = JwtHelper.generateToken(user.email)
+            ResponseEntity.ok(token)
+        } catch (e: AuthenticationException) {
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        }
     }
 }
